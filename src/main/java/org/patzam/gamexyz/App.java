@@ -4,19 +4,25 @@ package org.patzam.gamexyz;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.patzam.gamexyz.game.Game;
+import org.patzam.gamexyz.manager.GameContextManager;
+import org.patzam.gamexyz.network.GameContext;
+import org.patzam.gamexyz.network.GameEnvironmentMDP;
+import org.patzam.gamexyz.network.NetworkManagerXYZ;
+
 
 import java.awt.*;
-import java.io.IOException;
 
 public class App  {
 
 
     private App() {
-            final Game2Snake game = new Game2Snake();
+            final Game game = new Game();
+            game.status="Train";
 
 
 
-
+        final MultiLayerNetwork multiLayerNetwork = NetworkManagerXYZ.loadNetwork("backup.zip");
 
         final Thread thread = new Thread(() -> {
             final GameEnvironmentMDP mdp = new GameEnvironmentMDP(game);
@@ -26,16 +32,24 @@ public class App  {
                     NetworkManagerXYZ.buildConfig()
             );
 
-            dql.train();
+
+
+
+
+
+
+
+
+
+
+//            dql.train();
             mdp.close();
 
-            try {
-
-                dql.getNeuralNet().save("test2Snake.zip");
-
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
+//            try {
+//                dql.getNeuralNet().save("test2Snake.zip");
+//            } catch (IOException e) {
+//                System.out.println(e.getMessage());
+//            }
 
             game.init();
             evaluateNetwork(game);
@@ -44,10 +58,11 @@ public class App  {
         thread.start();
     }
 
-    private void evaluateNetwork(Game2Snake game) {
-        final MultiLayerNetwork multiLayerNetwork = NetworkManagerXYZ.loadNetwork("test2Snake.zip");
+    private void evaluateNetwork(Game game) {
+        game.status="In game";
+        final MultiLayerNetwork multiLayerNetwork = NetworkManagerXYZ.loadNetwork("best.zip");
         int highscore = 0;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             int score = 0;
             while (game.isOngoing()) {
                 try {
@@ -61,11 +76,11 @@ public class App  {
                     score = game.getScore();
 
                     // Needed so that we can see easier what is the game doing
-                    NetworkManagerXYZ.waitMs(14);
+                    NetworkManagerXYZ.waitMicroseconds(0);
                 } catch (final Exception e) {
                     System.out.println(e.getMessage());
                     Thread.currentThread().interrupt();
-                  //  game.endGame();
+                    game.endGame();
                 }
             }
 

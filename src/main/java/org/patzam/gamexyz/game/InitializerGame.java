@@ -1,0 +1,60 @@
+package org.patzam.gamexyz.game;
+
+import com.jme3.asset.AssetManager;
+import com.jme3.input.FlyByCamera;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.debug.WireBox;
+import com.jme3.util.SkyFactory;
+
+public class InitializerGame {
+
+    private static AssetManager assetManager;
+    private static Node rootNode;
+
+    public static void create(AssetManager getAssetManager,Node getRootNode){
+        assetManager=getAssetManager;
+        rootNode=getRootNode;
+    }
+
+
+    public static void initSky() {
+        rootNode.attachChild(SkyFactory.createSky(assetManager, "textures/Sky/BrightSky.dds", SkyFactory.EnvMapType.CubeMap));
+    }
+
+    public static void initArea() {
+        WireBox wirebox = new WireBox(
+                GameParameters.GAME_DIMENSIONS_X * 0.5f + GameParameters.PLAYER_SIZE,
+                GameParameters.GAME_DIMENSIONS_Y * 0.5f + GameParameters.PLAYER_SIZE,
+                GameParameters.GAME_DIMENSIONS_Z * 0.5f + GameParameters.PLAYER_SIZE);
+
+        Geometry boxGeometry = new Geometry("Wirebox", wirebox);
+        Material boxMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        boxMaterial.setColor("Color", ColorRGBA.Black);
+        boxGeometry.setMaterial(boxMaterial);
+
+
+        boxGeometry.setLocalTranslation(GameParameters.GAME_DIMENSIONS_X / 2,
+                GameParameters.GAME_DIMENSIONS_Y / 2,
+                GameParameters.GAME_DIMENSIONS_Z / 2);
+
+        rootNode.attachChild(boxGeometry);
+
+    }
+
+    public static void initCam(FlyByCamera flyCam,Camera cam) {
+        flyCam.setEnabled(true);
+        flyCam.setMoveSpeed(60f);
+        cam.setLocation(new Vector3f(GameParameters.GAME_DIMENSIONS_X / 2f,
+                GameParameters.GAME_DIMENSIONS_Y / 2f,
+                GameParameters.GAME_DIMENSIONS_Z * 2));
+
+        cam.lookAt(new Vector3f(GameParameters.GAME_DIMENSIONS_X / 2f,
+                GameParameters.GAME_DIMENSIONS_Y / 2f,
+                0), Vector3f.UNIT_Z);
+    }
+}

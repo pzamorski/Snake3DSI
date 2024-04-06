@@ -1,6 +1,8 @@
 package org.patzam.gamexyz;
 
 
+import org.patzam.gamexyz.game.GameParameters;
+
 public class Position {
     private final int x;
     private final int y;

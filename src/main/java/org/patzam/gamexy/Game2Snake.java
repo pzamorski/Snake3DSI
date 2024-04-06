@@ -65,7 +65,7 @@ public class Game2Snake extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
-        getRootNode().attachChild(SkyFactory.createSky(getAssetManager(), "Textures/Sky/Bright/BrightSky.dds", SkyFactory.EnvMapType.CubeMap));
+        getRootNode().attachChild(SkyFactory.createSky(getAssetManager(), "textures/Sky/BrightSky.dds", SkyFactory.EnvMapType.CubeMap));
         assetManager.registerLocator("assets", FileLocator.class);
 
 //        showGameArea();
@@ -381,9 +381,9 @@ public class Game2Snake extends SimpleApplication implements ActionListener {
     private void showGameAreaOneCube() {
 
         WireBox wirebox = new WireBox(
-                GRID_SIZE_X*0.5f+ org.patzam.gamexyz.GameParameters.PLAYER_SIZE,
-                GRID_SIZE_Y*0.5f+ org.patzam.gamexyz.GameParameters.PLAYER_SIZE,
-                GRID_SIZE_Z*0.5f+ org.patzam.gamexyz.GameParameters.PLAYER_SIZE);
+                GRID_SIZE_X*0.5f+ org.patzam.gamexyz.game.GameParameters.PLAYER_SIZE,
+                GRID_SIZE_Y*0.5f+ org.patzam.gamexyz.game.GameParameters.PLAYER_SIZE,
+                GRID_SIZE_Z*0.5f+ org.patzam.gamexyz.game.GameParameters.PLAYER_SIZE);
 
         Geometry boxGeometry = new Geometry("Wirebox", wirebox);
         Material boxMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
