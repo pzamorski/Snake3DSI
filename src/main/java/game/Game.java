@@ -64,11 +64,7 @@ public class Game extends SimpleApplication {
         init();
         start();
     }
-
-//    public static void main(String[] args) {
-//        Game game = new Game();
-//
-//    }
+    
 
     @Override
     public void simpleInitApp() {
