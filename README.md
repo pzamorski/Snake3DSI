@@ -1,35 +1,42 @@
 # Snake 3D
 
-## Opis
+## Description
 
-Snake to klasyczna gra węża, w której gracz kontroluje węża, aby zebrać jedzenie i unikać kolizji ze ścianami planszy oraz własnym ogonem. W tej wersji gry, użytkownik rozpoczyna od trenowania sztucznej inteligencji, która kontroluje węża, aby nauczyć się strategii gry. Po zakończeniu etapu treningowego, użytkownik może przejść do tradycyjnej gry i samodzielnie kontrolować węża.
+Snake is a classic snake game where the player controls a snake to collect food and avoid collisions with the walls of the board and its own tail. In this version of the game, the user starts with training artificial intelligence that controls the snake to learn game strategies. After completing the training stage, the user can proceed to the traditional game and control the snake independently.
 
-## Funkcje
+## Features
 
-- Generowanie losowego położenia jedzenia na planszy
-- Dynamiczny wzrost długości węża po zjedzeniu jedzenia
-- Wyświetlanie wyniku gracza i aktualnego stanu gry
-- Detekcja kolizji z ścianami planszy i własnym ogonem
+- Random generation of food positions on the board
+- Dynamic growth of snake length after eating food
+- Display of player score and current game state
+- Detection of collisions with the board walls and its own tail
 
-## Instrukcje
+## Instructions
 
-1. Uruchom aplikację, aby rozpocząć trening sztucznej inteligencji.
-2. W trakcie treningu, obserwuj, jak sztuczna inteligencja kontroluje węża, ucząc się strategii gry.
-3. Po zakończeniu treningu, użytkownik może przejść do tradycyjnej gry i samodzielnie kontrolować węża.
-4. Kontroluj węża za pomocą klawiszy strzałek lub WASD.
-5. Zbieraj jedzenie, aby zwiększyć wynik.
-6. Unikaj kolizji ze ścianami i własnym ogonem.
-7. Gra kończy się, gdy wąż uderzy w ścianę lub swoje ciało.
+1. Run the application to start training artificial intelligence.
+2. During training, observe how artificial intelligence controls the snake, learning game strategies.
+3. After completing the training, start the game in observation mode to observe the behavior of the snake in real-time.
 
-## Wymagania systemowe
+## System Requirements
 
 - Java Runtime Environment (JRE)
-- Obsługa grafiki 3D
+- 3D graphics support
 
-## Autorzy
+## Used Libraries
 
-- [Patryk Zamorski](https://github.com/pzamorski) - Twórca gry
+- [jMonkeyEngine](https://jmonkeyengine.org/) - Engine for 3D game development
+- [Deeplearning4j](https://deeplearning4j.konduit.ai/) - Library for machine learning
+- [RL4J](https://deeplearning4j.konduit.ai/rl4j) - Library for reinforcement learning in Java environments
 
-## Licencja
+## Authors
 
-Ten projekt jest objęty licencją [MIT License](LICENSE).
+- [Patryk Zamorski](https://github.com/pzamorski) - Game Creator
+
+## Video Links
+
+- [Snake Training Video](https://www.youtube.com/watch?v=ZnvaEOr2dU4) - Watch the process of training artificial intelligence for the snake game.
+- [Snake Game Video](https://www.youtube.com/watch?v=DrNnn_PXiZA) - Watch the snake controlled by artificial intelligence in real-time.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
