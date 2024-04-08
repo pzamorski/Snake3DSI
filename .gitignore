@@ -2,6 +2,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+test2.zip
+test2Snake.zip
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
