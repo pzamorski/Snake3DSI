@@ -30,7 +30,7 @@ public class InitializerGame {
 
 
     public static void initSky() {
-        rootNode.attachChild(SkyFactory.createSky(assetManager, "textures/Sky/BrightSky.dds", SkyFactory.EnvMapType.CubeMap));
+        rootNode.attachChild(SkyFactory.createSky(assetManager, "textures/sky/BrightSky.dds", SkyFactory.EnvMapType.CubeMap));
     }
 
     public static void initArea() {
