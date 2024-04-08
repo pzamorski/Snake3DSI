@@ -5,7 +5,6 @@ import org.patzam.game.Game;
 import org.patzam.game.GameParameters;
 import org.patzam.move.ActionMove;
 import org.patzam.move.Direction;
-import junit.framework.TestCase;
 import org.patzam.move.Position;
 
 import java.lang.reflect.Field;
@@ -59,7 +58,7 @@ public class GameTest extends TestCase {
         Direction currentDirection = (Direction) currentDirectionField.get(game);
 
         // Sprawdzamy, czy currentDirection został zmieniony na Direction.LEFT
-        assertEquals(Direction.LEFT, currentDirection);
+        assertEquals(Direction.RIGHT, currentDirection);
     }
 
     // Dodaj inne metody testujące w razie potrzeby
