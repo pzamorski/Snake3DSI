@@ -1,72 +1,57 @@
-package org.patzam.gamexy;
+package org.patzam;
 
 
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
 import org.nd4j.linalg.api.ndarray.INDArray;
-
+import org.patzam.game.Game;
+import org.patzam.manager.GameContextManager;
+import org.patzam.move.ActionMove;
+import org.patzam.network.GameContext;
+import org.patzam.network.GameEnvironmentMDP;
+import org.patzam.network.NetworkManager;
 
 import java.awt.*;
-import java.io.IOException;
 
-public class App  {
+public class App {
 
+
+    private static final String NAME_FILE = "models/model.zip";
 
     private App() {
-            final Game2Snake game = new Game2Snake();
-//            add(game);
-//            setResizable(false);
-//            pack();
-//            setTitle("Snake SI");
-//            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        final Game game = new Game();
+        game.setStatusText("Train");
 
 
-
-
-        final Thread thread = new Thread(() -> {
-
-            // Create our training environment
+        final Thread trainThread = new Thread(() -> {
             final GameEnvironmentMDP mdp = new GameEnvironmentMDP(game);
-
-
             final QLearningDiscreteDense<GameContext> dql = new QLearningDiscreteDense<>(
                     mdp,
-                    NetworkManagerXY.buildDQNFactory(),
-                    NetworkManagerXY.buildConfig()
+                    NetworkManager.buildDQNFactory(),
+                    NetworkManager.buildConfig()
             );
 
-
-            dql.train();
-
+            //dql.train();
             mdp.close();
+            //NetworkManager.save(dql, NAME_FILE);
 
-            // Save network
-            try {
-
-                dql.getNeuralNet().save("test2Snake.zip");
-
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-            // Reset the game
             game.init();
-
-            // Evaluate just trained network
             evaluateNetwork(game);
         });
 
-        thread.start();
+        trainThread.start();
     }
 
-    private void evaluateNetwork(Game2Snake game) {
-        final MultiLayerNetwork multiLayerNetwork = NetworkManagerXY.loadNetwork("test2Snake.zip");
+    private void evaluateNetwork(Game game) {
+        game.setStatusText("In game");
+        final MultiLayerNetwork multiLayerNetwork = NetworkManager.loadNetwork(NAME_FILE);
+
         int highscore = 0;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             int score = 0;
             while (game.isOngoing()) {
                 try {
                     final GameContext state = game.buildStateObservation();
-                    game.setSnakeLength(3);
                     final INDArray output = multiLayerNetwork.output(state.getMatrix(), false);
                     double[] data = output.data().asDouble();
 
@@ -76,11 +61,11 @@ public class App  {
                     score = game.getScore();
 
                     // Needed so that we can see easier what is the game doing
-                    NetworkManagerXY.waitMs(1);
+                    NetworkManager.waitMicroseconds(1);
                 } catch (final Exception e) {
                     System.out.println(e.getMessage());
                     Thread.currentThread().interrupt();
-                  //  game.endGame();
+                    game.endGame();
                 }
             }
 
@@ -95,7 +80,6 @@ public class App  {
         System.out.println("End evaluation");
         System.out.println("Highscore: " + highscore);
     }
-
 
 
     public static void main(String[] args) {

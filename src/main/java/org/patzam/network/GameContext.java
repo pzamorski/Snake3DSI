@@ -1,4 +1,4 @@
-package org.patzam.gamexy;
+package org.patzam.network;
 
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -9,10 +9,10 @@ public class GameContext implements Encodable {
 
     public GameContext(final double[] inputs) {
         this.inputs = inputs;
-        for (double input : inputs) {
-            System.out.print(input+" ");
-        }
-        System.out.println();
+//        for (double input : inputs) {
+//            System.out.print(input+" ");
+//        }
+//        System.out.println();
     }
 
     @Override

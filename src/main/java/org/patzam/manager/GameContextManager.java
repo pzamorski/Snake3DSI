@@ -1,13 +1,16 @@
-package org.patzam.gamexy;
+package org.patzam.manager;
 
 
+
+
+import org.patzam.move.Direction;
+import org.patzam.move.Position;
 
 import java.util.Arrays;
 
 public final class GameContextManager {
 
     private GameContextManager() {}
-
 
     public static double getStateForDirection(final Position[] snakePosition,
                                               final Position foodPosition,
@@ -37,7 +40,7 @@ public final class GameContextManager {
         }
 
         if (directionToCheck == Direction.DOWN) {
-            if (head.getY() < foodPosition.getY()) {
+            if (head.getY() > foodPosition.getY()) {
                 return 1.0;
             }
 
@@ -45,12 +48,29 @@ public final class GameContextManager {
         }
 
         if (directionToCheck == Direction.LEFT) {
-            if (head.getX() < foodPosition.getX()) {
+            if (head.getX() > foodPosition.getX()) {
                 return 1.0;
             }
 
             return 0.0;
         }
+        if (directionToCheck == Direction.IN) {
+            if (head.getZ() < foodPosition.getZ()) {
+                return 1.0;
+            }
+
+            return 0.0;
+        }
+
+        if (directionToCheck == Direction.OUT) {
+            if (head.getZ() > foodPosition.getZ()) {
+                return 1.0;
+            }
+
+            return 0.0;
+        }
+
+
 
         return 0.0;
     }

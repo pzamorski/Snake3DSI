@@ -1,4 +1,4 @@
-package org.patzam.gamexyz.game;
+package org.patzam.game;
 
 
 import com.jme3.app.SimpleApplication;
@@ -6,66 +6,58 @@ import com.jme3.audio.AudioNode;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-
 import com.jme3.scene.Geometry;
-
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
+import org.patzam.manager.AudioManager;
+import org.patzam.manager.GameContextManager;
+import org.patzam.manager.PositionManager;
+import org.patzam.manager.RewardManager;
+import org.patzam.move.ActionMove;
+import org.patzam.move.Direction;
+import org.patzam.move.Position;
+import org.patzam.network.GameContext;
+import org.patzam.network.NetworkManager;
 
-import org.patzam.gamexyz.ActionMove;
-import org.patzam.gamexyz.Direction;
-import org.patzam.gamexyz.Position;
-import org.patzam.gamexyz.manager.AudioManager;
-import org.patzam.gamexyz.manager.GameContextManager;
-import org.patzam.gamexyz.manager.PositionManager;
-import org.patzam.gamexyz.manager.RewardManager;
-import org.patzam.gamexyz.network.GameContext;
-import org.patzam.gamexyz.network.NetworkManagerXYZ;
-
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Random;
 
 
-public class Game extends SimpleApplication implements ActionListener {
+public class Game extends SimpleApplication {
 
 
-    private transient Position[] snakePosition = new Position[5000];
     private static LinkedList<Geometry> snakeParts;
-    private Geometry snakePart;
+
     private Geometry food;
-
-
-    private Direction currentDirection = Direction.RIGHT;
-    private boolean inGame = true;
-
-    private transient Position foodPosition;
-    private int snakeLength;
-
-    private static final int GRID_SIZE_X = GameParameters.GAME_DIMENSIONS_X;
-    private static final int GRID_SIZE_Y = GameParameters.GAME_DIMENSIONS_Y;
-    private static final int GRID_SIZE_Z = GameParameters.GAME_DIMENSIONS_Z;
-    private int oldX;
-    private int oldY;
-    private int oldZ;
-    private Position oldPositionHead = new Position(0, 0, 0);
     private BitmapText scoreText, statusText, modeText;
 
+    private AudioNode crunch;
 
-    private int startSnakeLength = 6;
-    public String status;
+    private Direction currentDirection = Direction.RIGHT;
 
-    AudioNode crunch;
+    private boolean inGame = true;
+
+    private Position foodPosition;
+    private Position oldPositionHead, oldPositionFood;
+    private Position[] snakePosition = new Position[5000];
+
+    private int snakeLength;
+    private final int startSnakeLength = GameParameters.DEFAULT_SNAKE_LENGTH;
+
+    private String status;
+
 
     public Game() {
         AppSettings settings = new AppSettings(true);
         settings.setResolution(1200, 800);
-//        settings.setResolution(600, 400);
-//        settings.setFullscreen(true);
+        if (GameParameters.FULL_SCREEN) {
+            settings.setResolution(1920, 1080);
+            settings.setFullscreen(true);
+        }
         setSettings(settings);
         init();
     }
@@ -75,107 +67,67 @@ public class Game extends SimpleApplication implements ActionListener {
         game.start();
     }
 
-
-    private void initScore() {
-        scoreText = new BitmapText(guiFont, false);
-        scoreText.setSize(guiFont.getCharSet().getRenderedSize());
-        scoreText.setColor(ColorRGBA.White);
-        scoreText.setText("Score: 0"); // Początkowa wartość punktów
-        scoreText.setLocalTranslation(settings.getWidth() - scoreText.getLineWidth() - 30, settings.getHeight() - 10, 0);
-
-        // Dodaj tekst do interfejsu użytkownika
-        guiNode.attachChild(scoreText);
-    }
-
-    private void initStatusText() {
-        statusText = new BitmapText(guiFont, false);
-        statusText.setSize(guiFont.getCharSet().getRenderedSize());
-        statusText.setColor(ColorRGBA.White);
-        statusText.setLocalTranslation(10, settings.getHeight() - 10, 0);
-
-        // Dodaj tekst do interfejsu użytkownika
-        guiNode.attachChild(statusText);
-    }
-
-    private void setText() {
-        modeText = new BitmapText(guiFont, false);
-        modeText.setSize(guiFont.getCharSet().getRenderedSize());
-        modeText.setColor(ColorRGBA.White);
-        modeText.setLocalTranslation(settings.getWidth() - modeText.getLineWidth() - 80, 30, 0); // Ustawiamy lokalizację tekstu w prawym dolnym rogu
-
-        // Dodaj tekst do interfejsu użytkownika
-        guiNode.attachChild(modeText);
-    }
-
     @Override
     public void simpleInitApp() {
 
-        InitializerGame.create(getAssetManager(),rootNode);
+        InitializerGame.create(getAssetManager(), rootNode, guiFont, guiNode);
         InitializerGame.initSky();
         InitializerGame.initArea();
-        InitializerGame.initCam(flyCam,cam);
+        InitializerGame.initCam(flyCam, cam);
+        InitializerGame.initAudiManager();
 
+        scoreText = InitializerGame.initText("Score: 0", settings.getWidth() - 120, settings.getHeight());
+        statusText = InitializerGame.initText("Status", 10, settings.getHeight() - 10);
+        modeText = InitializerGame.initText("Mode", settings.getWidth() - 120, 30);
 
-        spawnFood(foodPosition.getX(), foodPosition.getY(), foodPosition.getZ());
-        initSnake();
-        initScore();
-        setText();
-        initStatusText();
-        initAudio();
-
-
-
-    }
-
-    private void initAudio() {
-        AudioManager.init(assetManager, rootNode);
         crunch = AudioManager.getSoundMap().get(AudioManager.CRUNCH);
+
+        spawnFood(foodPosition);
+        initSnake();
+
+
     }
 
 
     @Override
     public void simpleUpdate(float tpf) {
 
-        if (oldX != foodPosition.getX() || oldY != foodPosition.getY() || oldZ != foodPosition.getZ()) {
-            food.setLocalTranslation(foodPosition.getX(), foodPosition.getY(), foodPosition.getZ());
-            oldX = foodPosition.getX();
-            oldY = foodPosition.getY();
-            oldZ = foodPosition.getZ();
 
+        if (foodPosition.areAnyCoordinatesChanged(oldPositionFood)) {
+
+            food.setLocalTranslation(foodPosition.ToVector3f());
+            oldPositionFood = new Position(foodPosition);
 
             crunch.stop();
             crunch.play();
-
+            scoreText.setText("Score: " + getScore());
         }
 
-        if (oldPositionHead.getX() != getHeadPosition().getX() || oldPositionHead.getY() != getHeadPosition().getY() || oldPositionHead.getZ() != getHeadPosition().getZ()) {
-
-            scoreText.setText("Score: " + getScore());
+        if (getHeadPosition().areAnyCoordinatesChanged(oldPositionHead)) {
 
             statusText.setText("Head " + getHeadPosition().toString() + "\n" + "Food " + foodPosition.toString());
             modeText.setText(status);
-            int j = 0;
-            for (; null != snakePosition[j]; j++) {
-            }
 
-            try {
-                for (int i = 0; null != snakePosition[i]; i++) {
-                    if (snakeParts.size() < j) {
-                        spawnSnakePart(snakePosition[i].getX(), snakePosition[i].getY(), snakePosition[i].getZ());
-                    }
-                    if (snakeParts.size() > j) {
-                        initSnake();
-                    }
-                    snakeParts.get(i).setLocalTranslation(snakePosition[i].getX(), snakePosition[i].getY(), snakePosition[i].getZ());
+            int snakePositionLength = 0;
+            while (snakePosition[snakePositionLength] != null) {
+                snakePositionLength++;
+            }
+            for (int i = 0; i < snakePositionLength; i++) {
+                if (snakeParts.size() <= i) {
+                    spawnSnakePart(snakePosition[i]);
                 }
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(e);
+                snakeParts.get(i).setLocalTranslation(snakePosition[i].ToVector3f());
             }
-            ;
+            if (snakeParts.size() > snakePositionLength) {
+                for (int i = snakeParts.size() - 1; i >= snakePositionLength; i--) {
+                    rootNode.detachChild(snakeParts.get(i));
+                    snakeParts.remove(i);
+                }
+            }
 
+            oldPositionHead = new Position(getHeadPosition());
 
-            oldPositionHead = new Position(getHeadPosition().getX(), getHeadPosition().getY(), getHeadPosition().getZ());
-            draw();
+            getObservations();
 
 
         }
@@ -184,8 +136,7 @@ public class Game extends SimpleApplication implements ActionListener {
     }
 
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    private void updateGameLogic() {
         if (isOngoing()) {
             if (isFoodEaten()) {
                 snakeLength++;
@@ -214,15 +165,11 @@ public class Game extends SimpleApplication implements ActionListener {
 
 
     public void move() {
-        // Copy positions (e.g. head position is not moved to the top of the body, body - 1 is not body - 2 and so on)
         if (snakeLength - 1 >= 0) System.arraycopy(snakePosition, 0, snakePosition, 1, snakeLength - 1);
-        // Previous head position is currently at index 1
-        final Position previousHeadPosition = snakePosition[1];
 
-        // Set new head position
+        final Position previousHeadPosition = snakePosition[1];
         snakePosition[0] = PositionManager.getNextPosition(previousHeadPosition, currentDirection);
-        // As we do not use any key pressed events to move our player we need "manually" notify about performed action
-        actionPerformed(null);
+        updateGameLogic();
     }
 
 
@@ -260,15 +207,14 @@ public class Game extends SimpleApplication implements ActionListener {
         snakeLength = startSnakeLength;
 
         snakePosition = new Position[5000];
-        //snakeParts=new LinkedList<>();
 
         int setGridSizeZ = 0;
-        if (GRID_SIZE_Z > 1) {
-            setGridSizeZ = GRID_SIZE_Z / 2;
+        if (GameParameters.GAME_DIMENSIONS_Z > 1) {
+            setGridSizeZ = GameParameters.GAME_DIMENSIONS_Z / 2;
         }
 
         for (int i = 0; i < snakeLength; i++) {
-            snakePosition[i] = new Position(GRID_SIZE_X / 2 - i, GRID_SIZE_Y / 2, setGridSizeZ);
+            snakePosition[i] = new Position(GameParameters.GAME_DIMENSIONS_X / 2 - i, GameParameters.GAME_DIMENSIONS_Y / 2, setGridSizeZ);
         }
 
 
@@ -303,49 +249,32 @@ public class Game extends SimpleApplication implements ActionListener {
         return RewardManager.calculateRewardForActionToTake(action, snakePosition, foodPosition);
     }
 
-    private void draw() {
+    private void getObservations() {
         if (!isOngoing()) {
             return;
         }
 
-        // Draw snake
-        for (int i = 0; i < snakeLength; i++) {
-            // Position of one of the snake parts (head or tail)
-            final Position pos = snakePosition[i];
-            if (pos == null) {
-                continue;
-            }
-
-        }
-
         final Position headPosition = getHeadPosition();
-        final Position[] observations = new Position[NetworkManagerXYZ.NUMBER_OF_INPUTS];
+        final Position[] observations = new Position[NetworkManager.NUMBER_OF_INPUTS];
         observations[0] = PositionManager.getNextPosition(headPosition, Direction.UP);
         observations[1] = PositionManager.getNextPosition(headPosition, Direction.RIGHT);
         observations[2] = PositionManager.getNextPosition(headPosition, Direction.DOWN);
         observations[3] = PositionManager.getNextPosition(headPosition, Direction.LEFT);
         observations[4] = PositionManager.getNextPosition(headPosition, Direction.IN);
         observations[5] = PositionManager.getNextPosition(headPosition, Direction.OUT);
-//        for (int i = 0; i < observations.length; i++) {
-//            final Position pos = observations[i];
-//            if (pos == null) {
-//                continue;
-//            }
-//
-//        }
-        Toolkit.getDefaultToolkit().sync();
+
     }
 
     private void setNewFoodPosition() {
 
         Random random = new Random();
         int setGridSizeZ = 0;
-        if (GRID_SIZE_Z > 1) {
-            setGridSizeZ = GRID_SIZE_Z;
+        if (GameParameters.GAME_DIMENSIONS_Z > 1) {
+            setGridSizeZ = GameParameters.GAME_DIMENSIONS_Z;
             setGridSizeZ = random.nextInt(setGridSizeZ);
         }
-        foodPosition = new Position(random.nextInt(GRID_SIZE_X),
-                random.nextInt(GRID_SIZE_Y),
+        foodPosition = new Position(random.nextInt(GameParameters.GAME_DIMENSIONS_X),
+                random.nextInt(GameParameters.GAME_DIMENSIONS_Y),
                 setGridSizeZ
         );
 
@@ -377,7 +306,6 @@ public class Game extends SimpleApplication implements ActionListener {
 
     private void initSnake() {
 
-        // Sprawdź czy snakeParts zostało zainicjowane
         if (snakeParts == null) {
             snakeParts = new LinkedList<>();
         } else {
@@ -392,13 +320,13 @@ public class Game extends SimpleApplication implements ActionListener {
 
         // Inicjuj nowego węża na podstawie pozycji z tablicy snakePosition
         for (int i = 0; i < snakePosition.length && snakePosition[i] != null; i++) {
-            spawnSnakePart(snakePosition[i].getX(), snakePosition[i].getY(), snakePosition[i].getZ());
+            spawnSnakePart(snakePosition[i]);
         }
     }
 
-    private void spawnSnakePart(int x, int y, int z) {
+    private void spawnSnakePart(Position position) {
         Box box = new Box(0.5f, 0.5f, 0.5f);
-        snakePart = new Geometry("SnakePart", box);
+        Geometry snakePart = new Geometry("SnakePart", box);
 
         Texture texture = assetManager.loadTexture("textures/snake/snakeSkin.jpg"); // Wczytujemy teksturę
 
@@ -411,32 +339,31 @@ public class Game extends SimpleApplication implements ActionListener {
         } else {
             Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             mat.setTexture("ColorMap", texture); // Ustawiamy teksturę jako mapę kolorów
-            int redValue=(snakeParts.size());
+            int redValue = (snakeParts.size());
             int greenValue = (snakeParts.size());
             int blueValue = (snakeParts.size());
             mat.setColor("Color", ColorRGBA.fromRGBA255(redValue, greenValue, blueValue, 255));
             snakePart.setMaterial(mat);
         }
 
-        snakePart.setLocalTranslation(x, y, z);
+        snakePart.setLocalTranslation(position.ToVector3f());
         snakeParts.add(snakePart);
         rootNode.attachChild(snakePart);
     }
 
-    private void spawnFood(int x, int y, int z) {
-        Sphere sphere = new Sphere(16, 16, 0.5f);
+
+    private void spawnFood(Position position) {
+        Sphere sphere = new Sphere(16, 16, 1f);
         food = new Geometry("Food", sphere);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Red);
         food.setMaterial(mat);
-        food.setLocalTranslation(x, y, z);
+        food.setLocalTranslation(position.ToVector3f());
         rootNode.attachChild(food);
-        System.out.println("Food init");
     }
 
 
-
-
-
-
+    public void setStatusText(String text) {
+        status = text;
+    }
 }

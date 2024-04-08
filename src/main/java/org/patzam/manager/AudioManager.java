@@ -1,7 +1,6 @@
-package org.patzam.gamexyz.manager;
+package org.patzam.manager;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.asset.plugins.FileLocator;
 import com.jme3.audio.AudioNode;
 import com.jme3.scene.Node;
 

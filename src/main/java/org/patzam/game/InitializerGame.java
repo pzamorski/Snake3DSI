@@ -1,6 +1,8 @@
-package org.patzam.gamexyz.game;
+package org.patzam.game;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 import com.jme3.input.FlyByCamera;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -9,16 +11,22 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.debug.WireBox;
+import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
+import org.patzam.manager.AudioManager;
 
 public class InitializerGame {
 
     private static AssetManager assetManager;
     private static Node rootNode;
+    private static BitmapFont guiFont;
+    private static Node guiNode;
 
-    public static void create(AssetManager getAssetManager,Node getRootNode){
-        assetManager=getAssetManager;
-        rootNode=getRootNode;
+    public static void create(AssetManager getAssetManager, Node getRootNode, BitmapFont getGuiFont, Node getGuiNode){
+        assetManager = getAssetManager;
+        rootNode = getRootNode;
+        guiFont = getGuiFont;
+        guiNode = getGuiNode;
     }
 
 
@@ -56,5 +64,21 @@ public class InitializerGame {
         cam.lookAt(new Vector3f(GameParameters.GAME_DIMENSIONS_X / 2f,
                 GameParameters.GAME_DIMENSIONS_Y / 2f,
                 0), Vector3f.UNIT_Z);
+    }
+
+    public static void initAudiManager() {
+        AudioManager.init(assetManager, rootNode);
+    }
+
+    public static BitmapText initText(String text, float x, float y) {
+        BitmapText bitmapText = new BitmapText(guiFont, false);
+        bitmapText.setSize(guiFont.getCharSet().getRenderedSize());
+        bitmapText.setColor(ColorRGBA.White);
+        bitmapText.setText(text);
+        bitmapText.setLocalTranslation(x,  y, 0);
+
+        guiNode.attachChild(bitmapText);
+
+        return bitmapText;
     }
 }

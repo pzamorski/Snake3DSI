@@ -1,4 +1,4 @@
-package org.patzam.gamexy;
+package org.patzam.network;
 
 
 
@@ -6,16 +6,19 @@ import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
-
+import org.patzam.move.ActionMove;
+import org.patzam.game.Game;
 
 
 public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpace> {
-    private final DiscreteSpace actionSpace = new DiscreteSpace(4);
-    private final Game2Snake game;
+    private final DiscreteSpace actionSpace = new DiscreteSpace(NetworkManager.NUMBER_OF_INPUTS);
+    private final Game game;
 
-    public GameEnvironmentMDP(final Game2Snake game) {
+    public GameEnvironmentMDP(final Game game) {
+
         this.game = game;
         this.game.start();
+
     }
 
     @Override
@@ -36,10 +39,6 @@ public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpa
     @Override
     public void close() {}
 
-    public void setSnakeLenth(int snakeLenth){
-        game.setSnakeLength(snakeLenth);
-    }
-
     @Override
     public StepReply<GameContext> step(final Integer actionIndex) {
         // Find action based on action index
@@ -53,14 +52,15 @@ public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpa
         // Get reward
         double reward = game.calculateRewardForActionToTake(actionToTake);
 
-        // Get current state
         final GameContext observation = game.buildStateObservation();
+
+        
 
         return new StepReply<>(
                 observation,
                 reward,
                 isDone(),
-                "SnakeDl4j"
+                "Snake"
         );
     }
 

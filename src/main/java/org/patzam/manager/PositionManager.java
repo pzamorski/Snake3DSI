@@ -1,8 +1,8 @@
-package org.patzam.gamexyz.manager;
+package org.patzam.manager;
 
-import org.patzam.gamexyz.Direction;
-import org.patzam.gamexyz.game.GameParameters;
-import org.patzam.gamexyz.Position;
+import org.patzam.move.Direction;
+import org.patzam.move.Position;
+import org.patzam.game.GameParameters;
 
 public final class PositionManager {
 

@@ -1,9 +1,9 @@
-package org.patzam.gamexyz.manager;
+package org.patzam.manager;
 
 
-import org.patzam.gamexyz.ActionMove;
-import org.patzam.gamexyz.Direction;
-import org.patzam.gamexyz.Position;
+import org.patzam.move.ActionMove;
+import org.patzam.move.Direction;
+import org.patzam.move.Position;
 
 import java.util.Arrays;
 
