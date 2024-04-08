@@ -24,7 +24,7 @@ public class App {
         System.out.println("2. Evaluate the network");
         System.out.print("Enter your choice (type 1 or 2): ");
         int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
+        scanner.nextLine();
 
         if (choice == 1) {
             trainModel(scanner);
@@ -53,7 +53,7 @@ public class App {
         // Train the model
         dql.train();
         mdp.close();
-        NetworkManager.save(dql, MODELS_DIR + modelName);
+        NetworkManager.save(dql, MODELS_DIR + modelName+".zip");
     }
 
     private static void evaluateModel(Scanner scanner) {
@@ -63,7 +63,7 @@ public class App {
         if (modelFiles != null && modelFiles.length > 0) {
             System.out.println("Available models for evaluation:");
             for (File file : modelFiles) {
-                System.out.println("   -" + file.getName());
+                System.out.println("   -" + file.getName().replace(".zip",""));
             }
 
             // Ask for the model file name
@@ -71,9 +71,9 @@ public class App {
             String modelName = scanner.nextLine();
 
             // Check if the provided model name exists
-            File modelFile = new File(MODELS_DIR + modelName);
+            File modelFile = new File(MODELS_DIR + modelName+".zip");
             if (modelFile.exists()) {
-                evaluateNetwork(modelName);
+                evaluateNetwork(modelName+".zip");
             } else {
                 System.out.println("Invalid model file name. Please enter a valid model file name.");
             }
@@ -107,6 +107,7 @@ public class App {
                 game.endGame();
             }
         }
+        game.stop();
         System.out.println("Score: " + score);
     }
 }
