@@ -11,7 +11,6 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.debug.WireBox;
-import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
 import org.patzam.manager.AudioManager;
 
@@ -36,9 +35,9 @@ public class InitializerGame {
 
     public static void initArea() {
         WireBox wirebox = new WireBox(
-                GameParameters.GAME_DIMENSIONS_X * 0.5f + GameParameters.PLAYER_SIZE,
-                GameParameters.GAME_DIMENSIONS_Y * 0.5f + GameParameters.PLAYER_SIZE,
-                GameParameters.GAME_DIMENSIONS_Z * 0.5f + GameParameters.PLAYER_SIZE);
+                GameParameters.BOX_DIMENSIONS_X * 0.5f + GameParameters.PLAYER_SIZE,
+                GameParameters.BOX_DIMENSIONS_Y * 0.5f + GameParameters.PLAYER_SIZE,
+                GameParameters.BOX_DIMENSIONS_Z * 0.5f + GameParameters.PLAYER_SIZE);
 
         Geometry boxGeometry = new Geometry("Wirebox", wirebox);
         Material boxMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -46,9 +45,9 @@ public class InitializerGame {
         boxGeometry.setMaterial(boxMaterial);
 
 
-        boxGeometry.setLocalTranslation(GameParameters.GAME_DIMENSIONS_X / 2,
-                GameParameters.GAME_DIMENSIONS_Y / 2,
-                GameParameters.GAME_DIMENSIONS_Z / 2);
+        boxGeometry.setLocalTranslation(GameParameters.BOX_DIMENSIONS_X / 2,
+                GameParameters.BOX_DIMENSIONS_Y / 2,
+                GameParameters.BOX_DIMENSIONS_Z / 2);
 
         rootNode.attachChild(boxGeometry);
 
@@ -57,12 +56,12 @@ public class InitializerGame {
     public static void initCam(FlyByCamera flyCam,Camera cam) {
         flyCam.setEnabled(true);
         flyCam.setMoveSpeed(60f);
-        cam.setLocation(new Vector3f(GameParameters.GAME_DIMENSIONS_X / 2f,
-                GameParameters.GAME_DIMENSIONS_Y / 2f,
-                GameParameters.GAME_DIMENSIONS_Z * 2));
+        cam.setLocation(new Vector3f(GameParameters.BOX_DIMENSIONS_X / 2f,
+                GameParameters.BOX_DIMENSIONS_Y / 2f,
+                GameParameters.BOX_DIMENSIONS_Z * 2));
 
-        cam.lookAt(new Vector3f(GameParameters.GAME_DIMENSIONS_X / 2f,
-                GameParameters.GAME_DIMENSIONS_Y / 2f,
+        cam.lookAt(new Vector3f(GameParameters.BOX_DIMENSIONS_X / 2f,
+                GameParameters.BOX_DIMENSIONS_Y / 2f,
                 0), Vector3f.UNIT_Z);
     }
 

@@ -39,7 +39,7 @@ public class Position {
     }
 
     public boolean isOutsideTheArea() {
-        return x >= GameParameters.GAME_DIMENSIONS_X || y >= GameParameters.GAME_DIMENSIONS_Y || z >= GameParameters.GAME_DIMENSIONS_Z || x < 0 || y < 0 || z < 0;
+        return x >= GameParameters.BOX_DIMENSIONS_X || y >= GameParameters.BOX_DIMENSIONS_Y || z >= GameParameters.BOX_DIMENSIONS_Z || x < 0 || y < 0 || z < 0;
     }
 
     public boolean areAnyCoordinatesChanged(Position position){

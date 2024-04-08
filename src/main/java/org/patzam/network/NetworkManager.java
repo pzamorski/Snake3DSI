@@ -25,7 +25,7 @@ public final class NetworkManager {
                 .batchSize(128)//128
                 .targetDqnUpdateFreq(500)//500
                 .updateStart(20)//20
-                .rewardFactor(0.92)//0.12
+                .rewardFactor(0.92)//0.92
                 .gamma(0.995)//0.995
                 .errorClamp(0.5)//0.5f
                 .minEpsilon(0.1f)//0.1f

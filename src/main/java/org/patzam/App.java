@@ -31,9 +31,9 @@ public class App {
                     NetworkManager.buildConfig()
             );
 
-            //dql.train();
+//            dql.train();
             mdp.close();
-            //NetworkManager.save(dql, NAME_FILE);
+//            NetworkManager.save(dql, NAME_FILE);
 
             game.init();
             evaluateNetwork(game);

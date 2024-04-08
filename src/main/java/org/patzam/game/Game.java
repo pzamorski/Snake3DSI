@@ -53,10 +53,12 @@ public class Game extends SimpleApplication {
 
     public Game() {
         AppSettings settings = new AppSettings(true);
-        settings.setResolution(1200, 800);
+
         if (GameParameters.FULL_SCREEN) {
             settings.setResolution(1920, 1080);
             settings.setFullscreen(true);
+        }else {
+            settings.setResolution(800, 600);
         }
         setSettings(settings);
         init();
@@ -209,12 +211,12 @@ public class Game extends SimpleApplication {
         snakePosition = new Position[5000];
 
         int setGridSizeZ = 0;
-        if (GameParameters.GAME_DIMENSIONS_Z > 1) {
-            setGridSizeZ = GameParameters.GAME_DIMENSIONS_Z / 2;
+        if (GameParameters.BOX_DIMENSIONS_Z > 1) {
+            setGridSizeZ = GameParameters.BOX_DIMENSIONS_Z / 2;
         }
 
         for (int i = 0; i < snakeLength; i++) {
-            snakePosition[i] = new Position(GameParameters.GAME_DIMENSIONS_X / 2 - i, GameParameters.GAME_DIMENSIONS_Y / 2, setGridSizeZ);
+            snakePosition[i] = new Position(GameParameters.BOX_DIMENSIONS_X / 2 - i, GameParameters.BOX_DIMENSIONS_Y / 2, setGridSizeZ);
         }
 
 
@@ -269,12 +271,12 @@ public class Game extends SimpleApplication {
 
         Random random = new Random();
         int setGridSizeZ = 0;
-        if (GameParameters.GAME_DIMENSIONS_Z > 1) {
-            setGridSizeZ = GameParameters.GAME_DIMENSIONS_Z;
+        if (GameParameters.BOX_DIMENSIONS_Z > 1) {
+            setGridSizeZ = GameParameters.BOX_DIMENSIONS_Z;
             setGridSizeZ = random.nextInt(setGridSizeZ);
         }
-        foodPosition = new Position(random.nextInt(GameParameters.GAME_DIMENSIONS_X),
-                random.nextInt(GameParameters.GAME_DIMENSIONS_Y),
+        foodPosition = new Position(random.nextInt(GameParameters.BOX_DIMENSIONS_X),
+                random.nextInt(GameParameters.BOX_DIMENSIONS_Y),
                 setGridSizeZ
         );
 
