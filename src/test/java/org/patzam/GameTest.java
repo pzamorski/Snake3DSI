@@ -28,14 +28,12 @@ public class GameTest extends TestCase {
         Game game = new Game();
         game.init();
 
-        // Wywołujemy metodę move(), która zmienia pozycję węża
         game.move();
 
         Field snakePositionField = Game.class.getDeclaredField("snakePosition");
         snakePositionField.setAccessible(true);
         Position[] snakePosition = (Position[]) snakePositionField.get(game);
 
-        // Sprawdzamy, czy pierwszy element tablicy snakePosition został zmieniony
         assertTrue(snakePosition[0] != null);
     }
 
@@ -43,7 +41,6 @@ public class GameTest extends TestCase {
         Game game = new Game();
         game.init();
 
-        // Wywołujemy metodę changeDirection() z argumentem ActionMove.MOVE_LEFT
         Method changeDirectionMethod = Game.class.getDeclaredMethod("changeDirection", ActionMove.class);
         changeDirectionMethod.setAccessible(true);
         try {
@@ -52,14 +49,11 @@ public class GameTest extends TestCase {
             throw new RuntimeException(e);
         }
 
-        // Pobieramy wartość pola currentDirection
         Field currentDirectionField = Game.class.getDeclaredField("currentDirection");
         currentDirectionField.setAccessible(true);
         Direction currentDirection = (Direction) currentDirectionField.get(game);
 
-        // Sprawdzamy, czy currentDirection został zmieniony na Direction.LEFT
         assertEquals(Direction.RIGHT, currentDirection);
     }
-
-    // Dodaj inne metody testujące w razie potrzeby
+    
 }
