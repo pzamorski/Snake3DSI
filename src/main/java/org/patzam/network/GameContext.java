@@ -9,10 +9,6 @@ public class GameContext implements Encodable {
 
     public GameContext(final double[] inputs) {
         this.inputs = inputs;
-//        for (double input : inputs) {
-//            System.out.print(input+" ");
-//        }
-//        System.out.println();
     }
 
     @Override
@@ -31,9 +27,7 @@ public class GameContext implements Encodable {
     }
 
     public INDArray getMatrix() {
-        return Nd4j.create(new double[][] {
-                inputs
-        });
+        return Nd4j.create(new double[][] {inputs});
     }
 
     @Override

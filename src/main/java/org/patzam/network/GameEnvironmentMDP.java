@@ -15,10 +15,8 @@ public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpa
     private final Game game;
 
     public GameEnvironmentMDP(final Game game) {
-
         this.game = game;
         this.game.start();
-
     }
 
     @Override
@@ -41,27 +39,14 @@ public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpa
 
     @Override
     public StepReply<GameContext> step(final Integer actionIndex) {
-        // Find action based on action index
         final ActionMove actionToTake = ActionMove.getActionByIndex(actionIndex);
-
-        // Change direction based on action and move the snake in that direction
         game.changeDirection(actionToTake);
         game.move();
-
-
-        // Get reward
         double reward = game.calculateRewardForActionToTake(actionToTake);
-
         final GameContext observation = game.buildStateObservation();
 
-        
 
-        return new StepReply<>(
-                observation,
-                reward,
-                isDone(),
-                "Snake"
-        );
+        return new StepReply<>(observation, reward, isDone(), "Snake");
     }
 
     @Override
@@ -71,7 +56,6 @@ public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpa
 
     @Override
     public MDP<GameContext, Integer, DiscreteSpace> newInstance() {
-
         game.init();
         return new GameEnvironmentMDP(game);
     }
