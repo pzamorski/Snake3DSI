@@ -1,15 +1,12 @@
-package org.patzam;
-
-
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.patzam.game.Game;
-import org.patzam.manager.GameContextManager;
-import org.patzam.move.ActionMove;
-import org.patzam.network.GameContext;
-import org.patzam.network.GameEnvironmentMDP;
-import org.patzam.network.NetworkManager;
+import game.Game;
+import manager.GameContextManager;
+import move.ActionMove;
+import network.GameContext;
+import network.GameEnvironmentMDP;
+import network.NetworkManager;
 
 import java.awt.*;
 
@@ -31,9 +28,9 @@ public class App {
                     NetworkManager.buildConfig()
             );
 
-//            dql.train();
+            dql.train();
             mdp.close();
-//            NetworkManager.save(dql, NAME_FILE);
+            NetworkManager.save(dql, NAME_FILE);
 
             game.init();
             evaluateNetwork(game);

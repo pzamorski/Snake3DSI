@@ -1,11 +1,11 @@
 package org.patzam;
 
 import junit.framework.TestCase;
-import org.patzam.game.Game;
-import org.patzam.game.GameParameters;
-import org.patzam.move.ActionMove;
-import org.patzam.move.Direction;
-import org.patzam.move.Position;
+import game.Game;
+import game.GameParameters;
+import move.ActionMove;
+import move.Direction;
+import move.Position;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -55,5 +55,5 @@ public class GameTest extends TestCase {
 
         assertEquals(Direction.RIGHT, currentDirection);
     }
-    
+
 }

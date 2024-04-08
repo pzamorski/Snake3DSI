@@ -1,10 +1,10 @@
-package org.patzam.manager;
+package manager;
 
 
 
 
-import org.patzam.move.Direction;
-import org.patzam.move.Position;
+import move.Direction;
+import move.Position;
 
 import java.util.Arrays;
 

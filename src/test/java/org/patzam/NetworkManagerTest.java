@@ -5,8 +5,8 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
 import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdDense;
-import org.patzam.network.GameContext;
-import org.patzam.network.NetworkManager;
+import network.GameContext;
+import network.NetworkManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

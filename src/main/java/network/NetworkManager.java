@@ -1,4 +1,4 @@
-package org.patzam.network;
+package network;
 
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.rl4j.learning.configuration.QLearningConfiguration;

@@ -1,4 +1,4 @@
-package org.patzam.move;
+package move;
 
 import java.util.List;
 

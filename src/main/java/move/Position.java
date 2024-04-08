@@ -1,8 +1,8 @@
-package org.patzam.move;
+package move;
 
 
 import com.jme3.math.Vector3f;
-import org.patzam.game.GameParameters;
+import game.GameParameters;
 
 public class Position {
     private final int x;

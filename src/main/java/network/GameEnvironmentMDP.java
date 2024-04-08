@@ -1,4 +1,4 @@
-package org.patzam.network;
+package network;
 
 
 
@@ -6,8 +6,8 @@ import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
-import org.patzam.move.ActionMove;
-import org.patzam.game.Game;
+import move.ActionMove;
+import game.Game;
 
 
 public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpace> {

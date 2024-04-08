@@ -1,4 +1,4 @@
-package org.patzam.game;
+package game;
 
 
 public final class GameParameters {

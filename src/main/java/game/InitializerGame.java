@@ -1,4 +1,4 @@
-package org.patzam.game;
+package game;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
@@ -12,7 +12,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.debug.WireBox;
 import com.jme3.util.SkyFactory;
-import org.patzam.manager.AudioManager;
+import manager.AudioManager;
 
 public class InitializerGame {
 

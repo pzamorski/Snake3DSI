@@ -1,4 +1,4 @@
-package org.patzam.network;
+package network;
 
 import org.deeplearning4j.rl4j.space.Encodable;
 import org.nd4j.linalg.api.ndarray.INDArray;

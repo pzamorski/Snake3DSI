@@ -1,4 +1,4 @@
-package org.patzam.game;
+package game;
 
 
 import com.jme3.app.SimpleApplication;
@@ -11,15 +11,15 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
-import org.patzam.manager.AudioManager;
-import org.patzam.manager.GameContextManager;
-import org.patzam.manager.PositionManager;
-import org.patzam.manager.RewardManager;
-import org.patzam.move.ActionMove;
-import org.patzam.move.Direction;
-import org.patzam.move.Position;
-import org.patzam.network.GameContext;
-import org.patzam.network.NetworkManager;
+import manager.AudioManager;
+import manager.GameContextManager;
+import manager.PositionManager;
+import manager.RewardManager;
+import move.ActionMove;
+import move.Direction;
+import move.Position;
+import network.GameContext;
+import network.NetworkManager;
 
 import java.util.Arrays;
 import java.util.LinkedList;
