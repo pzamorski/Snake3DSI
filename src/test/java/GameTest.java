@@ -1,5 +1,3 @@
-package org.patzam;
-
 import junit.framework.TestCase;
 import game.Game;
 import game.GameParameters;
