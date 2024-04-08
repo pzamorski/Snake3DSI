@@ -62,12 +62,13 @@ public class Game extends SimpleApplication {
         }
         setSettings(settings);
         init();
+        start();
     }
 
-    public static void main(String[] args) {
-        Game game = new Game();
-        game.start();
-    }
+//    public static void main(String[] args) {
+//        Game game = new Game();
+//
+//    }
 
     @Override
     public void simpleInitApp() {

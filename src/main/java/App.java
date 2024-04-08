@@ -1,87 +1,112 @@
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import game.Game;
 import manager.GameContextManager;
 import move.ActionMove;
 import network.GameContext;
 import network.GameEnvironmentMDP;
 import network.NetworkManager;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
+import org.nd4j.linalg.api.ndarray.INDArray;
 
-import java.awt.*;
+import java.io.File;
+import java.util.Scanner;
+
 
 public class App {
-
-
-    private static final String NAME_FILE = "models/model.zip";
-
-    private App() {
-        final Game game = new Game();
-        game.setStatusText("Train");
-
-
-        final Thread trainThread = new Thread(() -> {
-            final GameEnvironmentMDP mdp = new GameEnvironmentMDP(game);
-            final QLearningDiscreteDense<GameContext> dql = new QLearningDiscreteDense<>(
-                    mdp,
-                    NetworkManager.buildDQNFactory(),
-                    NetworkManager.buildConfig()
-            );
-
-            dql.train();
-            mdp.close();
-            NetworkManager.save(dql, NAME_FILE);
-
-            game.init();
-            evaluateNetwork(game);
-        });
-
-        trainThread.start();
-    }
-
-    private void evaluateNetwork(Game game) {
-        game.setStatusText("In game");
-        final MultiLayerNetwork multiLayerNetwork = NetworkManager.loadNetwork(NAME_FILE);
-
-        int highscore = 0;
-        for (int i = 0; i < 10000; i++) {
-            int score = 0;
-            while (game.isOngoing()) {
-                try {
-                    final GameContext state = game.buildStateObservation();
-                    final INDArray output = multiLayerNetwork.output(state.getMatrix(), false);
-                    double[] data = output.data().asDouble();
-
-                    int maxValueIndex = GameContextManager.getMaxValueIndex(data);
-                    game.changeDirection(ActionMove.getActionByIndex(maxValueIndex));
-                    game.move();
-                    score = game.getScore();
-
-                    // Needed so that we can see easier what is the game doing
-                    NetworkManager.waitMicroseconds(1);
-                } catch (final Exception e) {
-                    System.out.println(e.getMessage());
-                    Thread.currentThread().interrupt();
-                    game.endGame();
-                }
-            }
-
-            System.out.println("Iteration:" + i + "  score:" + score);
-            if (score > highscore) {
-                highscore = score;
-            }
-
-            // Reset the game
-            game.init();
-        }
-        System.out.println("End evaluation");
-        System.out.println("Highscore: " + highscore);
-    }
-
+    private static final String MODELS_DIR = "models/";
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            App ex = new App();
-        });
+        Scanner scanner = new Scanner(System.in);
+
+        // Choose between training or evaluating the network
+        System.out.println("Choose the operation: ");
+        System.out.println("1. Train the network");
+        System.out.println("2. Evaluate the network");
+        System.out.print("Enter your choice (type 1 or 2): ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        if (choice == 1) {
+            trainModel(scanner);
+        } else if (choice == 2) {
+            evaluateModel(scanner);
+        } else {
+            System.out.println("Invalid choice. Please choose 1 or 2.");
+        }
+
+        scanner.close();
+    }
+
+    private static void trainModel(Scanner scanner) {
+        System.out.println("Enter the name for the model file (leave blank to use the default name): ");
+        String modelName = scanner.nextLine();
+        if (modelName.isEmpty()) {
+            modelName = "bestModel.zip"; // Default model name
+        }
+
+        // Initialize the game and training environment
+        Game game = new Game();
+        game.setStatusText("Train");
+        GameEnvironmentMDP mdp = new GameEnvironmentMDP(game);
+        QLearningDiscreteDense<GameContext> dql = new QLearningDiscreteDense<>(mdp, NetworkManager.buildDQNFactory(), NetworkManager.buildConfig());
+
+        // Train the model
+        dql.train();
+        mdp.close();
+        NetworkManager.save(dql, MODELS_DIR + modelName);
+    }
+
+    private static void evaluateModel(Scanner scanner) {
+        // List available model files
+        File modelsDirectory = new File(MODELS_DIR);
+        File[] modelFiles = modelsDirectory.listFiles();
+        if (modelFiles != null && modelFiles.length > 0) {
+            System.out.println("Available models for evaluation:");
+            for (File file : modelFiles) {
+                System.out.println("   -" + file.getName());
+            }
+
+            // Ask for the model file name
+            System.out.println("Enter the name of the model name for evaluation: ");
+            String modelName = scanner.nextLine();
+
+            // Check if the provided model name exists
+            File modelFile = new File(MODELS_DIR + modelName);
+            if (modelFile.exists()) {
+                evaluateNetwork(modelName);
+            } else {
+                System.out.println("Invalid model file name. Please enter a valid model file name.");
+            }
+        } else {
+            System.out.println("No models available for evaluation in the models directory.");
+        }
+    }
+
+    private static void evaluateNetwork(String modelName) {
+        // Initialize the game and load the model
+        Game game = new Game();
+        game.init();
+        game.setStatusText("In game");
+        MultiLayerNetwork multiLayerNetwork = NetworkManager.loadNetwork(MODELS_DIR + modelName);
+        int score = 0;
+
+        // Evaluate the network
+        while (game.isOngoing()) {
+            try {
+                GameContext state = game.buildStateObservation();
+                INDArray output = multiLayerNetwork.output(state.getMatrix(), false);
+                double[] data = output.data().asDouble();
+
+                int maxValueIndex = GameContextManager.getMaxValueIndex(data);
+                game.changeDirection(ActionMove.getActionByIndex(maxValueIndex));
+                game.move();
+                score = game.getScore();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                Thread.currentThread().interrupt();
+                game.endGame();
+            }
+        }
+        System.out.println("Score: " + score);
     }
 }
