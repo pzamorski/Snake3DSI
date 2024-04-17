@@ -2,6 +2,7 @@ package network;
 
 
 
+import game.EnvironmentUtility;
 import org.deeplearning4j.gym.StepReply;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.DiscreteSpace;
@@ -12,9 +13,9 @@ import game.Game;
 
 public class GameEnvironmentMDP implements MDP<GameContext, Integer, DiscreteSpace> {
     private final DiscreteSpace actionSpace = new DiscreteSpace(NetworkManager.NUMBER_OF_INPUTS);
-    private final Game game;
+    private final EnvironmentUtility game;
 
-    public GameEnvironmentMDP(final Game game) {
+    public GameEnvironmentMDP(final EnvironmentUtility game) {
         this.game = game;
         this.game.start();
     }

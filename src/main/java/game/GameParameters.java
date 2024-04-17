@@ -9,7 +9,7 @@ public final class GameParameters {
 
     public static final int DEFAULT_SNAKE_LENGTH = 6;
 
-    public static final int BOX_DIMENSIONS = 200;
+    public static final int BOX_DIMENSIONS = 20;
     public static final int BOX_DIMENSIONS_Z = BOX_DIMENSIONS;
     public static final int BOX_DIMENSIONS_Y = BOX_DIMENSIONS;
     public static final int BOX_DIMENSIONS_X = BOX_DIMENSIONS;

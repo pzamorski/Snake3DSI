@@ -19,7 +19,6 @@ import move.ActionMove;
 import move.Direction;
 import move.Position;
 import network.GameContext;
-import network.NetworkManager;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -27,7 +26,7 @@ import java.util.Objects;
 import java.util.Random;
 
 
-public class Game extends SimpleApplication {
+public class Game extends SimpleApplication implements EnvironmentUtility {
 
 
     private static LinkedList<Geometry> snakeParts;
@@ -39,8 +38,6 @@ public class Game extends SimpleApplication {
 
     private Direction currentDirection = Direction.RIGHT;
 
-    private boolean inGame = true;
-
     private Position foodPosition;
     private Position oldPositionHead, oldPositionFood;
     private Position[] snakePosition = new Position[5000];
@@ -48,6 +45,7 @@ public class Game extends SimpleApplication {
     private int snakeLength;
     private final int startSnakeLength = GameParameters.DEFAULT_SNAKE_LENGTH;
 
+    private boolean inGame = true;
     private String status;
 
 
@@ -57,7 +55,7 @@ public class Game extends SimpleApplication {
         if (GameParameters.FULL_SCREEN) {
             settings.setResolution(1920, 1080);
             settings.setFullscreen(true);
-        }else {
+        } else {
             settings.setResolution(800, 600);
         }
         setSettings(settings);
@@ -99,7 +97,9 @@ public class Game extends SimpleApplication {
 
             crunch.stop();
             crunch.play();
-            scoreText.setText("Score: " + getScore());
+            scoreText.setText("Score: " +
+                    getScore() + "/" +
+                    GameParameters.BOX_DIMENSIONS_X * GameParameters.BOX_DIMENSIONS_Y * GameParameters.BOX_DIMENSIONS_Z);
         }
 
         if (getHeadPosition().areAnyCoordinatesChanged(oldPositionHead)) {
@@ -126,7 +126,7 @@ public class Game extends SimpleApplication {
 
             oldPositionHead = new Position(getHeadPosition());
 
-            getObservations();
+            //getObservations();
 
 
         }
@@ -134,35 +134,7 @@ public class Game extends SimpleApplication {
 
     }
 
-
-    private void updateGameLogic() {
-        if (isOngoing()) {
-            if (isFoodEaten()) {
-                snakeLength++;
-
-                setNewFoodPosition();
-            } else {
-                final Position headPosition = getHeadPosition();
-                inGame = !headPosition.isOutsideTheArea();
-
-                if (inGame) {
-                    checkIfPlayerHeadIsCollidingWithOtherBodyParts(headPosition);
-                }
-            }
-        }
-
-        if (!inGame) {
-            // System.out.println("                You tried very hard, but you lost the game.");
-        }
-
-    }
-
-
-    public int getScore() {
-        return snakeLength - startSnakeLength;
-    }
-
-
+    @Override
     public void move() {
         if (snakeLength - 1 >= 0) System.arraycopy(snakePosition, 0, snakePosition, 1, snakeLength - 1);
 
@@ -171,7 +143,7 @@ public class Game extends SimpleApplication {
         updateGameLogic();
     }
 
-
+    @Override
     public void changeDirection(final ActionMove action) {
 
         switch (action) {
@@ -202,6 +174,7 @@ public class Game extends SimpleApplication {
         }
     }
 
+    @Override
     public GameContext init() {
         snakeLength = startSnakeLength;
 
@@ -224,14 +197,17 @@ public class Game extends SimpleApplication {
         return buildStateObservation();
     }
 
+    @Override
     public boolean isOngoing() {
         return inGame;
     }
 
+    @Override
     public void endGame() {
         this.inGame = false;
     }
 
+    @Override
     public GameContext buildStateObservation() {
         return new GameContext(new double[]{
 
@@ -244,25 +220,38 @@ public class Game extends SimpleApplication {
         });
     }
 
+    @Override
     public double calculateRewardForActionToTake(final ActionMove action) {
         return RewardManager.calculateRewardForActionToTake(action, snakePosition, foodPosition);
     }
 
-    private void getObservations() {
-        if (!isOngoing()) {
-            return;
+    private void updateGameLogic() {
+        if (isOngoing()) {
+            if (isFoodEaten()) {
+                snakeLength++;
+
+                setNewFoodPosition();
+            } else {
+                final Position headPosition = getHeadPosition();
+                inGame = !headPosition.isOutsideTheArea();
+
+                if (inGame) {
+                    checkIfPlayerHeadIsCollidingWithOtherBodyParts(headPosition);
+                }
+            }
         }
 
-        final Position headPosition = getHeadPosition();
-        final Position[] observations = new Position[NetworkManager.NUMBER_OF_INPUTS];
-        observations[0] = PositionManager.getNextPosition(headPosition, Direction.UP);
-        observations[1] = PositionManager.getNextPosition(headPosition, Direction.RIGHT);
-        observations[2] = PositionManager.getNextPosition(headPosition, Direction.DOWN);
-        observations[3] = PositionManager.getNextPosition(headPosition, Direction.LEFT);
-        observations[4] = PositionManager.getNextPosition(headPosition, Direction.IN);
-        observations[5] = PositionManager.getNextPosition(headPosition, Direction.OUT);
+        if (!inGame) {
+            // System.out.println("                You tried very hard, but you lost the game.");
+        }
 
     }
+
+
+    public int getScore() {
+        return snakeLength - startSnakeLength;
+    }
+
 
     private void setNewFoodPosition() {
 

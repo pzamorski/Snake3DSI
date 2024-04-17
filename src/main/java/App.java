@@ -10,12 +10,28 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.io.File;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 
 public class App {
     private static final String MODELS_DIR = "models/";
 
     public static void main(String[] args) {
+
+        File directory = new File(MODELS_DIR.replace("/",""));
+
+        if (!directory.exists()) {
+            if (directory.mkdir()) {
+                System.out.println("Created the 'models' directory.");
+            } else {
+                System.out.println("Failed to create the 'models' directory.");
+            }
+        } else {
+            System.out.println("The 'models' directory already exists.");
+        }
+
+
+
         Scanner scanner = new Scanner(System.in);
 
         // Choose between training or evaluating the network
@@ -100,6 +116,7 @@ public class App {
                 int maxValueIndex = GameContextManager.getMaxValueIndex(data);
                 game.changeDirection(ActionMove.getActionByIndex(maxValueIndex));
                 game.move();
+                TimeUnit.MILLISECONDS.sleep(5);
                 score = game.getScore();
             } catch (Exception e) {
                 System.out.println(e.getMessage());

@@ -38,8 +38,8 @@ public final class NetworkManager {
         final DQNDenseNetworkConfiguration build = DQNDenseNetworkConfiguration.builder()
                 .l2(0.001)//0.003
                 .updater(new RmsProp(0.01))//0.01
-                .numHiddenNodes(2500)//5000
-                .numLayers(1)//1
+                .numHiddenNodes(700)//2500
+                .numLayers(2)//1
                 .build();
 
 
